@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <unistd.h>
 #define BUFFER_SIZE 50
 #define NUMITEMS 30
 
@@ -13,10 +14,11 @@ pthread_cond_t client_broad;
 pthread_cond_t server_sig;
 
 message_insert(int arg){
-	printf("insert message!!\n", arg);
+	printf("\n\ninsert message!!\n", arg);
 	printf("user%d: ", arg);
 
 	scanf("%s", message);
+	printf("\n");
 	pthread_cond_signal(&server_sig);
 }
 
@@ -24,9 +26,7 @@ receive_broadcast(int arg){
 
 	pthread_cond_wait(&client_broad, &client_mutex);
 
-	printf("\n------------------------------------------------------\n");
-	printf("\nuser%d receive broadcast: %s\n", arg,message);
-	printf("\n------------------------------------------------------\n");
+	printf("user%d receive broadcast: %s\n", arg,message);
 
 
 }
@@ -46,10 +46,11 @@ void *server(void *arg)
 void *client(void *arg){
 	int status;
 	while (1) {
-		pthread_mutex_lock(&client_mutex);	
+	//	pthread_mutex_lock(&client_mutex);	
 		
 		if(message_count == 0){
 			message_count = 1;
+            sleep(1);
 			message_insert(arg);
 		}
 		else
